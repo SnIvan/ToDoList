@@ -2,17 +2,28 @@
 import UIKit
 
 class TableViewController: UITableViewController {
+    
     let defaults = UserDefaults.standard
     var items = [Item]()
     let itemsKey = "itemsKey"
     let pListPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("items.plist")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadList()
     }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
+            items.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCell(withIdentifier: "itemCell", for: indexPath)
@@ -26,7 +37,7 @@ class TableViewController: UITableViewController {
         }
         else
         {
-            cell.detailTextLabel?.text = "Ongoing"
+            cell.detailTextLabel?.text = "In progress"
         }
         return cell
     }
@@ -41,7 +52,7 @@ class TableViewController: UITableViewController {
         }
         else
         {
-            cell?.detailTextLabel?.text = "Ongoing"
+            cell?.detailTextLabel?.text = "In progress"
         }
         saveList()
     }
